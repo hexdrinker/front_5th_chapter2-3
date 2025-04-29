@@ -1,13 +1,18 @@
-import { IApiInsertPostRequest, IApiSelectPostSearchParams, IApiUpdatePostRequest } from "../model/types"
+import {
+  IPostListResponse,
+  IPostInsertRequest,
+  IPostUpdateRequest,
+  IPostSearchParams,
+} from "@/entities/post/model/types"
 
-const fetchPosts = async (params: IApiSelectPostSearchParams) => {
+const selectPostList = async (params: IPostSearchParams): Promise<IPostListResponse> => {
   const { limit, skip } = params
   const response = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
   const data = await response.json()
   return data
 }
 
-const addPost = async (newPost: IApiInsertPostRequest) => {
+const createPostItem = async (newPost: IPostInsertRequest) => {
   const response = await fetch("/api/posts/add", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -17,7 +22,7 @@ const addPost = async (newPost: IApiInsertPostRequest) => {
   return data
 }
 
-const updatePost = async (post: IApiUpdatePostRequest) => {
+const updatePostItem = async (post: IPostUpdateRequest) => {
   const response = await fetch(`/api/posts/${post.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -27,7 +32,7 @@ const updatePost = async (post: IApiUpdatePostRequest) => {
   return data
 }
 
-const deletePost = async (id: number) => {
+const deletePostItem = async (id: number) => {
   const response = await fetch(`/api/posts/${id}`, {
     method: "DELETE",
   })
@@ -35,16 +40,16 @@ const deletePost = async (id: number) => {
   return data
 }
 
-const searchPosts = async (searchQuery: string) => {
+const searchPostList = async (searchQuery: string): Promise<IPostListResponse> => {
   const response = await fetch(`/api/posts/search?q=${searchQuery}`)
   const data = await response.json()
   return data
 }
 
-const fetchPostsByTag = async (tag: string) => {
+const selectPostListByTag = async (tag: string): Promise<IPostListResponse> => {
   const response = await fetch(`/api/posts/tag/${tag}`)
   const data = await response.json()
   return data
 }
 
-export { fetchPosts, addPost, updatePost, deletePost, searchPosts, fetchPostsByTag }
+export { selectPostList, createPostItem, updatePostItem, deletePostItem, searchPostList, selectPostListByTag }

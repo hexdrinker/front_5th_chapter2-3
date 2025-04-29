@@ -1,11 +1,13 @@
-interface IApiSelectPostListResponse {
-  posts: IApiSelectPostItem[]
+import { IUser } from "@/entities/user/model/types"
+
+interface IPostListResponse {
+  posts: IPost[]
   total: number
   skip: number
   limit: number
 }
 
-interface IApiSelectPostItem {
+interface IPost {
   id: number
   title: string
   body: string
@@ -18,23 +20,24 @@ interface IApiSelectPostItem {
   userId: number
 }
 
-interface IApiInsertPostRequest {
+interface IPostWithAuthor extends IPost {
+  author?: IUser
+}
+
+interface IPostInsertRequest {
   title: string
   body: string
   userId: number
 }
 
-type IApiUpdatePostRequest = IApiSelectPostItem
+type IPostUpdateRequest = IPost
 
-interface IApiSelectPostSearchParams {
+interface IPostSearchParams {
   limit: number
   skip: number
+  search: string
+  sortBy: string
+  sortOrder: string
 }
 
-export type {
-  IApiSelectPostListResponse,
-  IApiSelectPostItem,
-  IApiInsertPostRequest,
-  IApiUpdatePostRequest,
-  IApiSelectPostSearchParams,
-}
+export type { IPost, IPostWithAuthor, IPostListResponse, IPostInsertRequest, IPostUpdateRequest, IPostSearchParams }
