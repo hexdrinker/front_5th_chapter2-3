@@ -1,17 +1,22 @@
 import PostItem from "@/features/post/ui/PostItem"
-import { IPostItem } from "@/features/post/model/types"
+import usePost from "@/features/post/model/usePost"
+import { useEffect } from "react"
 
-interface PostListProps {
-  posts: IPostItem[]
-  selectedTag: string
-  searchQuery: string
-}
+const PostList = () => {
+  const { posts, fetchPosts } = usePost()
 
-const PostList = ({ posts, selectedTag, searchQuery }: PostListProps) => {
+  useEffect(() => {
+    fetchPosts({ limit: 10, skip: 0, search: "", sortBy: "createdAt", sortOrder: "desc" })
+  }, [])
+
+  if (!posts.length) {
+    return null
+  }
+
   return (
     <>
       {posts.map((post) => (
-        <PostItem key={post.id} post={post} selectedTag={selectedTag} searchQuery={searchQuery} />
+        <PostItem key={post.id} post={post} searchQuery={""} />
       ))}
     </>
   )
