@@ -9,15 +9,14 @@ import DeleteButton from "@/features/post/ui/DeleteButton"
 import { ReactionCounter } from "@/entities/post/ui"
 
 import usePostEventHandler from "@/features/post/model/usePostEventHandler"
-import { IPostItem } from "@/features/post/model/types"
+import { IPostWithAuthor } from "@/entities/post/model/types"
 
 interface PostItemProps {
-  post: IPostItem
-  selectedTag: string
+  post: IPostWithAuthor
   searchQuery: string
 }
 
-const PostItem = ({ post, selectedTag, searchQuery }: PostItemProps) => {
+const PostItem = ({ post, searchQuery }: PostItemProps) => {
   const { handleClickPostDetail, handleClickPostEdit, handleClickPostDelete, handleClickPostAuthor } =
     usePostEventHandler()
 
@@ -25,19 +24,19 @@ const PostItem = ({ post, selectedTag, searchQuery }: PostItemProps) => {
     <TableRow key={post.id}>
       <TableCell>{post.id}</TableCell>
       <TableCell>
-        <PostTitle post={post} selectedTag={selectedTag} searchQuery={searchQuery} />
+        <PostTitle post={post} searchQuery={searchQuery} />
       </TableCell>
       <TableCell>
-        <PostAuthor post={post} onClick={handleClickPostAuthor} />
+        <PostAuthor post={post} onClick={() => handleClickPostAuthor(post.author)} />
       </TableCell>
       <TableCell>
         <ReactionCounter likes={0} dislikes={0} />
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <DetailButton onClick={handleClickPostDetail} />
-          <EditButton onClick={handleClickPostEdit} />
-          <DeleteButton onClick={handleClickPostDelete} />
+          <DetailButton onClick={() => handleClickPostDetail(post)} />
+          <EditButton onClick={() => handleClickPostEdit(post)} />
+          <DeleteButton onClick={() => handleClickPostDelete(post.id)} />
         </div>
       </TableCell>
     </TableRow>
