@@ -1,9 +1,9 @@
 import { ITagListResponse } from "@/entities/tag/model/types"
 
-const fetchTags = async (): Promise<ITagListResponse> => {
+const selectTags = async (): Promise<ITagListResponse> => {
   const response = await fetch("/api/posts/tags")
   const data = await response.json()
   return data
 }
 
-export { fetchTags }
+export { selectTags }
