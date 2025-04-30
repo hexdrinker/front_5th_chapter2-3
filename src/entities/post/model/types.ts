@@ -35,7 +35,7 @@ type IPostUpdateRequest = IPost
 interface IPostSearchParams {
   limit: number
   skip: number
-  search: string
+  searchQuery: string
   sortBy: string
   sortOrder: string
 }
