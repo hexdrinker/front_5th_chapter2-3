@@ -1,9 +1,9 @@
 import { useAtom, useSetAtom } from "jotai"
 import { postsAtom, postsTotalAtom, selectedPostAtom } from "@/entities/post/model/store"
-import { createPostItem, selectPostList, updatePostItem } from "@/entities/post/api/postApi"
+import { createPostItem, selectPostList, selectPostListByTag, updatePostItem } from "@/entities/post/api/postApi"
 import { selectUserList } from "@/entities/user/api/userApi"
 import { IPostInsertRequest, IPostSearchParams, IPostUpdateRequest, IPostWithAuthor } from "@/entities/post/model/types"
-import { newPostAtom, showAddDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
+import { newPostAtom, searchParamsAtom, showAddDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
 
 const usePost = () => {
   const [posts, setPosts] = useAtom(postsAtom)
@@ -11,6 +11,7 @@ const usePost = () => {
   const [selectedPost] = useAtom(selectedPostAtom)
   const setShowAddDialog = useSetAtom(showAddDialogAtom)
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
+  const [searchParams] = useAtom(searchParamsAtom)
   const [, setNewPost] = useAtom(newPostAtom)
 
   const fetchPosts = async (searchParams: IPostSearchParams) => {
@@ -53,7 +54,26 @@ const usePost = () => {
     }
   }
 
-  return { posts, setPosts, total, selectedPost, fetchPosts, addPost, updatePost }
+  const fetchPostsByTag = async (tag: string) => {
+    if (!tag || tag === "all") {
+      fetchPosts(searchParams)
+      return
+    }
+    try {
+      const [postsResponse, usersResponse] = await Promise.all([selectPostListByTag(tag), selectUserList()])
+      const postsWithUsers = postsResponse.posts.map((post) => ({
+        ...post,
+        author: usersResponse.users.find((user) => user.id === post.userId),
+      }))
+
+      setPosts(postsWithUsers)
+      setTotal(postsResponse.total)
+    } catch (e) {
+      console.error("태그별 게시물 가져오기 오류:", e)
+    }
+  }
+
+  return { posts, setPosts, total, setTotal, selectedPost, fetchPosts, addPost, updatePost, fetchPostsByTag }
 }
 
 export default usePost

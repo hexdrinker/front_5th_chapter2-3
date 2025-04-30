@@ -30,7 +30,7 @@ const PostItem = ({ post, searchQuery }: PostItemProps) => {
         <PostAuthor post={post} onClick={() => handleClickPostAuthor(post.author)} />
       </TableCell>
       <TableCell>
-        <ReactionCounter likes={0} dislikes={0} />
+        <ReactionCounter likes={post.reactions?.likes} dislikes={post.reactions?.dislikes} />
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">

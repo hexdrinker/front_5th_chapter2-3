@@ -1,21 +1,25 @@
-import { fetchComments } from "@/entities/comment/api/commentApi"
+import { selectComments } from "@/entities/comment/api/commentApi"
 import { deletePostItem } from "@/entities/post/api/postApi"
 import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
 import { IPost } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
-// import { selectUserItem } from "@/entities/user/api/userApi"
+import { selectUserItem } from "@/entities/user/api/userApi"
 import { showDetailDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
 import { useAtom, useSetAtom } from "jotai"
+import { selectedUserAtom } from "@/entities/user/model/store"
+import { showUserModalAtom } from "@/features/user/model/store"
 
 const usePostEventHandler = () => {
   const [posts, setPosts] = useAtom(postsAtom)
   const setSelectedPost = useSetAtom(selectedPostAtom)
   const setShowDetailDialog = useSetAtom(showDetailDialogAtom)
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
+  const setSelectedUser = useSetAtom(selectedUserAtom)
+  const setShowUserModal = useSetAtom(showUserModalAtom)
 
   const handleClickPostDetail = (post: IPost) => {
     setSelectedPost(post)
-    fetchComments(post.id)
+    selectComments(post.id)
     setShowDetailDialog(true)
   }
 
@@ -33,10 +37,15 @@ const usePostEventHandler = () => {
     }
   }
 
-  const handleClickPostAuthor = async (user: IUser) => {
+  const handleClickPostAuthor = async (user?: IUser) => {
+    if (!user) {
+      return
+    }
+
     try {
-      // TODO: 함수의 책임이 여기가 맞는건가?
-      // const response = await selectUserItem(user.id)
+      const response = await selectUserItem(user.id)
+      setSelectedUser(response)
+      setShowUserModal(true)
     } catch (error) {
       console.error("사용자 정보 가져오기 오류:", error)
     }

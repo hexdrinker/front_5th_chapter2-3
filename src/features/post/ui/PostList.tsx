@@ -6,7 +6,7 @@ const PostList = () => {
   const { posts, fetchPosts } = usePost()
 
   useEffect(() => {
-    fetchPosts({ limit: 10, skip: 0, search: "", sortBy: "createdAt", sortOrder: "desc" })
+    fetchPosts({ limit: 10, skip: 0, searchQuery: "", sortBy: "createdAt", sortOrder: "desc" })
   }, [])
 
   if (!posts.length) {
