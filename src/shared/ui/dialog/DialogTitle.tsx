@@ -5,7 +5,7 @@ interface DialogTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   className?: string
 }
 
-export const DialogTitle = forwardRef<HTMLHeadingElement, DialogTitleProps>(({ className, ...props }, ref) => (
+export const DialogTitle = forwardRef<HTMLHeadingElement, DialogTitleProps>(({ className = "", ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
     className={`text-lg font-semibold leading-none tracking-tight ${className}`}
