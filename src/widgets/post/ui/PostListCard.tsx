@@ -4,7 +4,7 @@ import { Card } from "@/shared/ui"
 
 const PostListCard = () => {
   return (
-    <Card>
+    <Card className="w-full max-w-6xl mx-auto">
       <PostListCardHeader />
       <PostListCardContent />
     </Card>

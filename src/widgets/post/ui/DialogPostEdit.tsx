@@ -1,13 +1,15 @@
 import { useAtom } from "jotai"
 import { showEditDialogAtom } from "@/features/post/model/store"
 import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
-import { updatePostItem } from "@/entities/post/api/postApi"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
+import { useUpdatePost } from "@/entities/post/api/mutations"
+import { IPost } from "@/entities/post/model/types"
 
 const DialogPostEdit = () => {
   const [showEditDialog, setShowEditDialog] = useAtom(showEditDialogAtom)
   const [selectedPost, setSelectedPost] = useAtom(selectedPostAtom)
   const [posts, setPosts] = useAtom(postsAtom)
+  const { mutate: updatePost } = useUpdatePost()
 
   const handleClickUpdateButton = async () => {
     if (!selectedPost) {
@@ -15,10 +17,21 @@ const DialogPostEdit = () => {
     }
 
     try {
-      const response = await updatePostItem(selectedPost)
-      console.log(response)
-      setPosts(posts.map((post) => (post.id === selectedPost.id ? response : post)))
-      setShowEditDialog(false)
+      await updatePost(selectedPost, {
+        onSuccess: (data) => {
+          const updatedPost: IPost = {
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            userId: data.userId,
+            tags: data.tags,
+            reactions: data.reactions,
+            views: 0,
+          }
+          setPosts(posts.map((post) => (post.id === selectedPost.id ? updatedPost : post)))
+          setShowEditDialog(false)
+        },
+      })
     } catch (error) {
       console.error("게시물 업데이트 오류:", error)
     }

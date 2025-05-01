@@ -1,19 +1,20 @@
-import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
+import { useAtom, useSetAtom } from "jotai"
+
+import { showDetailDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
+import { showUserModalAtom } from "@/features/user/model/store"
+
+import { useDeleteComment } from "@/entities/comment/api/mutations"
+import { selectedUserIdAtom } from "@/entities/user/model/store"
 import { IPost } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
-import { selectUserItem } from "@/entities/user/api/userApi"
-import { showDetailDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
-import { useAtom, useSetAtom } from "jotai"
-import { selectedUserAtom } from "@/entities/user/model/store"
-import { showUserModalAtom } from "@/features/user/model/store"
-import { useDeleteComment } from "@/entities/comment/api/mutations"
+import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
 
 const usePostEventHandler = () => {
   const [posts, setPosts] = useAtom(postsAtom)
   const setSelectedPost = useSetAtom(selectedPostAtom)
   const setShowDetailDialog = useSetAtom(showDetailDialogAtom)
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
-  const setSelectedUser = useSetAtom(selectedUserAtom)
+  const setSelectedUserId = useSetAtom(selectedUserIdAtom)
   const setShowUserModal = useSetAtom(showUserModalAtom)
   const { mutate: deleteComment } = useDeleteComment()
 
@@ -40,14 +41,8 @@ const usePostEventHandler = () => {
     if (!user) {
       return
     }
-
-    try {
-      const response = await selectUserItem(user.id)
-      setSelectedUser(response)
-      setShowUserModal(true)
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error)
-    }
+    setSelectedUserId(user.id)
+    setShowUserModal(true)
   }
 
   return {

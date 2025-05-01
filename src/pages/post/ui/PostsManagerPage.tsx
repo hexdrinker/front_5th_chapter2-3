@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-
 import PostListCard from "@/widgets/post/ui/PostListCard"
 
 import DialogPostDetail from "@/widgets/post/ui/DialogPostDetail"
@@ -10,24 +8,8 @@ import DialogCommentAdd from "@/widgets/comment/ui/DialogCommentAdd"
 import DialogCommentEdit from "@/widgets/comment/ui/DialogCommentEdit"
 
 import DialogUserDetail from "@/widgets/user/ui/DialogUserDetail"
-import { useAtomValue } from "jotai"
-import { tagAtom } from "@/shared/model/queryParams"
-import usePost from "@/features/post/model/usePost"
-import { useQueryParams } from "@/shared/lib/useQueryParams"
 
 const PostsManagerPage = () => {
-  const selectedTag = useAtomValue(tagAtom)
-  const { fetchPosts, fetchPostsByTag } = usePost()
-  const { skip, limit, sortBy, sortOrder, searchQuery } = useQueryParams()
-
-  useEffect(() => {
-    if (selectedTag) {
-      fetchPostsByTag(selectedTag)
-    } else {
-      fetchPosts({ skip, limit, sortBy, sortOrder, searchQuery })
-    }
-  }, [skip, limit, sortBy, sortOrder, selectedTag])
-
   return (
     <>
       <PostListCard />

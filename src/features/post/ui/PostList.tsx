@@ -1,15 +1,12 @@
+import { IPostWithAuthor } from "@/entities/post/model/types"
 import PostItem from "@/features/post/ui/PostItem"
-import usePost from "@/features/post/model/usePost"
-import { useQueryParams } from "@/shared/lib/useQueryParams"
 
-const PostList = () => {
-  const { posts } = usePost()
-  const { searchQuery } = useQueryParams()
+interface PostListProps {
+  posts: IPostWithAuthor[]
+  searchQuery: string
+}
 
-  if (!posts.length) {
-    return null
-  }
-
+const PostList = ({ posts, searchQuery }: PostListProps) => {
   return (
     <>
       {posts.map((post) => (

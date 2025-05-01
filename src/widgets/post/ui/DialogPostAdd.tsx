@@ -1,13 +1,15 @@
-import { useAtom } from "jotai"
-import { createPostItem } from "@/entities/post/api/postApi"
+import { useAtom, useSetAtom } from "jotai"
 import { newPostAtom, showAddDialogAtom } from "@/features/post/model/store"
 import { postsAtom } from "@/entities/post/model/store"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
+import { useCreatePost } from "@/entities/post/api/mutations"
+import { IPost } from "@/entities/post/model/types"
 
 const DialogPostAdd = () => {
-  const [posts, setPosts] = useAtom(postsAtom)
+  const setPosts = useSetAtom(postsAtom)
   const [newPost, setNewPost] = useAtom(newPostAtom)
   const [showAddDialog, setShowAddDialog] = useAtom(showAddDialogAtom)
+  const { mutate: createPost } = useCreatePost()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewPost({ ...newPost, [e.target.name]: e.target.value })
@@ -15,9 +17,21 @@ const DialogPostAdd = () => {
 
   const handleClickAddButton = async () => {
     try {
-      const response = await createPostItem(newPost)
-      setPosts([response, ...posts])
-      setShowAddDialog(false)
+      await createPost(newPost, {
+        onSuccess: (data) => {
+          const newPost: IPost = {
+            id: data.id,
+            title: data.title,
+            body: data.body,
+            userId: data.userId,
+            tags: [],
+            reactions: { likes: 0, dislikes: 0 },
+            views: 0,
+          }
+          setPosts((prev) => [newPost, ...prev])
+          setShowAddDialog(false)
+        },
+      })
       setNewPost(newPost)
     } catch (error) {
       console.error("게시물 추가 오류:", error)
