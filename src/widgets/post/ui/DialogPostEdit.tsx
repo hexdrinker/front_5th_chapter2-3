@@ -2,7 +2,7 @@ import { useAtom } from "jotai"
 import { showEditDialogAtom } from "@/features/post/model/store"
 import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
 import { updatePostItem } from "@/entities/post/api/postApi"
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
+import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 
 const DialogPostEdit = () => {
   const [showEditDialog, setShowEditDialog] = useAtom(showEditDialogAtom)
@@ -36,18 +36,11 @@ const DialogPostEdit = () => {
   }
 
   return (
-    <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>게시물 수정</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <Input name="title" placeholder="제목" value={selectedPost?.title || ""} onChange={onChange} />
-          <Textarea name="body" rows={15} placeholder="내용" value={selectedPost?.body || ""} onChange={onChange} />
-          <Button onClick={handleClickUpdateButton}>게시물 업데이트</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <BaseDialog title="게시물 수정" open={showEditDialog} onOpenChange={setShowEditDialog}>
+      <Input name="title" placeholder="제목" value={selectedPost?.title || ""} onChange={onChange} />
+      <Textarea name="body" rows={15} placeholder="내용" value={selectedPost?.body || ""} onChange={onChange} />
+      <Button onClick={handleClickUpdateButton}>게시물 업데이트</Button>
+    </BaseDialog>
   )
 }
 

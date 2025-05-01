@@ -2,7 +2,7 @@ import { InsertComment } from "@/entities/comment/api/commentApi"
 import { commentsAtom } from "@/entities/comment/model/store"
 import { selectedPostAtom } from "@/entities/post/model/store"
 import { newCommentAtom, showAddCommentDialogAtom } from "@/features/comment/model/store"
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "@/shared/ui"
+import { BaseDialog, Button, Textarea } from "@/shared/ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 
 const DialogCommentAdd = () => {
@@ -31,17 +31,10 @@ const DialogCommentAdd = () => {
   }
 
   return (
-    <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>새 댓글 추가</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <Textarea placeholder="댓글 내용" value={newComment.body} onChange={onChange} />
-          <Button onClick={handleClickAddButton}>댓글 추가</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <BaseDialog title="새 댓글 추가" open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
+      <Textarea placeholder="댓글 내용" value={newComment.body} onChange={onChange} />
+      <Button onClick={handleClickAddButton}>댓글 추가</Button>
+    </BaseDialog>
   )
 }
 

@@ -2,7 +2,7 @@ import { useAtom } from "jotai"
 import { createPostItem } from "@/entities/post/api/postApi"
 import { newPostAtom, showAddDialogAtom } from "@/features/post/model/store"
 import { postsAtom } from "@/entities/post/model/store"
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
+import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 
 const DialogPostAdd = () => {
   const [posts, setPosts] = useAtom(postsAtom)
@@ -25,19 +25,12 @@ const DialogPostAdd = () => {
   }
 
   return (
-    <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>새 게시물 추가</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <Input name="title" placeholder="제목" value={newPost.title} onChange={onChange} />
-          <Textarea name="body" rows={30} placeholder="내용" value={newPost.body} onChange={onChange} />
-          <Input name="userId" type="number" placeholder="사용자 ID" value={newPost.userId} onChange={onChange} />
-          <Button onClick={handleClickAddButton}>게시물 추가</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <BaseDialog title="새 게시물 추가" open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <Input name="title" placeholder="제목" value={newPost.title} onChange={onChange} />
+      <Textarea name="body" rows={30} placeholder="내용" value={newPost.body} onChange={onChange} />
+      <Input name="userId" type="number" placeholder="사용자 ID" value={newPost.userId} onChange={onChange} />
+      <Button onClick={handleClickAddButton}>게시물 추가</Button>
+    </BaseDialog>
   )
 }
 
