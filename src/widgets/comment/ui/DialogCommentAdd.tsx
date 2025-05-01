@@ -27,8 +27,18 @@ const DialogCommentAdd = () => {
         { ...newComment, postId: selectedPost.id },
         {
           onSuccess: (data) => {
-            const newComment: IComment = { id: data.id, postId: data.postId, body: data.body, likes: 0 }
-            setComments((prev) => ({ ...prev, [data.postId]: [...(prev[data.postId] || []), newComment] }))
+            const newComment: IComment = {
+              id: data.id,
+              postId: data.postId,
+              body: data.body,
+              likes: 0,
+              user: {
+                fullName: data.user.fullName,
+                id: data.user.id,
+                username: data.user.username,
+              },
+            }
+            setComments((prev) => [...prev, newComment])
             setShowAddCommentDialog(false)
             setNewComment({ body: "", postId: null, userId: 1 })
           },

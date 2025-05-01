@@ -1,8 +1,13 @@
 interface IComment {
   id: number
   postId: number
-  likes: number
   body: string
+  likes: number
+  user: {
+    fullName: string
+    id: number
+    username: string
+  }
 }
 
 interface ICommentListResponse {
@@ -22,22 +27,20 @@ interface ICommentUpdateRequest {
   body: string
 }
 
-interface ICommentCreateResponse {
+type ICommentCreateResponse = {
   id: number
   postId: number
   body: string
   user: {
-    fullName: string
     id: number
     username: string
+    fullName: string
   }
 }
 
-interface ICommentLikeResponse extends ICommentCreateResponse {
-  likes: number
-}
+type ICommentLikeResponse = IComment
 
-type ICommentUpdateResponse = ICommentCreateResponse
+type ICommentUpdateResponse = IComment
 
 export type {
   IComment,

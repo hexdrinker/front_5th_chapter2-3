@@ -30,11 +30,18 @@ const DialogCommentEdit = () => {
         { id: selectedComment.id, comment: { body: selectedComment.body } },
         {
           onSuccess: (data) => {
-            const newComment: IComment = { id: data.id, postId: data.postId, body: data.body, likes: 0 }
-            setComments((prev) => ({
-              ...prev,
-              [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? newComment : comment)),
-            }))
+            const newComment: IComment = {
+              id: data.id,
+              postId: data.postId,
+              body: data.body,
+              likes: data.likes,
+              user: {
+                fullName: data.user.fullName,
+                id: data.user.id,
+                username: data.user.username,
+              },
+            }
+            setComments((prev) => prev.map((item) => (item.id === data.id ? newComment : item)))
             setShowEditCommentDialog(false)
           },
         },

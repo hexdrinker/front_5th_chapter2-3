@@ -12,12 +12,11 @@ import { commentsAtom, selectedCommentAtom } from "@/entities/comment/model/stor
 import { useLikeComment, useDeleteComment } from "@/entities/comment/api/mutations"
 
 interface CommentItemProps {
-  postId: number
   comment: IComment
   searchQuery: string
 }
 
-const CommentItem = ({ postId, comment, searchQuery }: CommentItemProps) => {
+const CommentItem = ({ comment, searchQuery }: CommentItemProps) => {
   const setComments = useSetAtom(commentsAtom)
   const setSelectedComment = useSetAtom(selectedCommentAtom)
   const setShowEditCommentDialog = useSetAtom(showEditCommentDialogAtom)
@@ -30,10 +29,7 @@ const CommentItem = ({ postId, comment, searchQuery }: CommentItemProps) => {
         { id: comment.id, likes: comment.likes + 1 },
         {
           onSuccess: (data) => {
-            setComments((prev) => ({
-              ...prev,
-              [postId]: prev[postId].map((item) => (item.id === data.id ? { ...data, likes: item.likes + 1 } : item)),
-            }))
+            setComments((prev) => prev.map((item) => (item.id === data.id ? { ...data, likes: item.likes + 1 } : item)))
           },
         },
       )
@@ -49,11 +45,11 @@ const CommentItem = ({ postId, comment, searchQuery }: CommentItemProps) => {
 
   const handleClickDeleteButton = async () => {
     try {
-      await deleteComment(comment.id)
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((item) => item.id !== comment.id),
-      }))
+      await deleteComment(comment.id, {
+        onSuccess: () => {
+          setComments((prev) => prev.filter((item) => item.id !== comment.id))
+        },
+      })
     } catch (error) {
       console.error("댓글 삭제 오류:", error)
     }

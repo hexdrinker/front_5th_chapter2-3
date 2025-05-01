@@ -1,6 +1,8 @@
 import CommentItem from "@/features/comment/ui/CommentItem"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { useCommentsQuery } from "@/entities/comment/api/queries"
+import { commentsAtom } from "@/entities/comment/model/store"
+import { useAtomValue } from "jotai"
 
 interface CommentListProps {
   postId: number
@@ -8,16 +10,13 @@ interface CommentListProps {
 
 const CommentList = ({ postId }: CommentListProps) => {
   const { searchQuery } = useQueryParams()
-  const { data } = useCommentsQuery(postId)
-
-  if (!data || !data.comments) {
-    return null
-  }
+  useCommentsQuery(postId)
+  const comments = useAtomValue(commentsAtom)
 
   return (
     <div className="space-y-1">
-      {data.comments.map((comment) => (
-        <CommentItem key={comment.id} comment={comment} postId={postId} searchQuery={searchQuery} />
+      {comments.map((comment) => (
+        <CommentItem key={comment.id} comment={comment} searchQuery={searchQuery} />
       ))}
     </div>
   )
