@@ -24,4 +24,5 @@ export const fetcher = {
   post: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.post(endpoint, options)),
   put: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.put(endpoint, options)),
   delete: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.delete(endpoint, options)),
+  patch: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.patch(endpoint, options)),
 }
