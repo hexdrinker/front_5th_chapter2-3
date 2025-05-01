@@ -1,93 +1,66 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import SearchForm from "@/features/post/ui/SearchForm"
 import TagFilter from "@/features/post/ui/TagFilter"
 import SortingFilter from "@/features/post/ui/SortingFilter"
 import OrderSortingFilter from "@/features/post/ui/OrderSortingFilter"
-import { searchParamsAtom } from "@/features/post/model/store"
 import usePost from "@/features/post/model/usePost"
-import { selectedTagAtom, tagsAtom } from "@/entities/tag/model/store"
-import { searchPostList, selectPostListByTag } from "@/entities/post/api/postApi"
-import { selectUserList } from "@/entities/user/api/userApi"
-import usePostParams from "@/features/post/model/usePostParams"
-import { useEffect } from "react"
-import { selectTags } from "@/entities/tag/api/tagApi"
+import { tagAtom } from "@/shared/model/queryParams"
+import { searchPostList } from "@/entities/post/api/postApi"
+import { useQueryParams } from "@/shared/lib/useQueryParams"
+import { postsLoadingAtom } from "@/entities/post/model/store"
+import useTag from "@/entities/tag/model/useTag"
 
 const FilterSection = () => {
-  const tags = useAtomValue(tagsAtom)
-  const [selectedTag, setSelectedTag] = useAtom(selectedTagAtom)
-  const [searchParams, setSearchParams] = useAtom(searchParamsAtom)
-  const { searchQuery, sortBy, sortOrder } = searchParams
-  const setTags = useSetAtom(tagsAtom)
-  const { fetchPosts, setPosts, setTotal } = usePost()
-  const { updateURL } = usePostParams()
+  const setPostsLoading = useSetAtom(postsLoadingAtom)
+  const [selectedTag, setSelectedTag] = useAtom(tagAtom)
+  const { fetchPosts, setPosts, setTotal, fetchPostsByTag } = usePost()
+  const { tags } = useTag()
+  const { skip, limit, searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder, updateQueryParams } =
+    useQueryParams()
 
-  const onTagFilterValueChange = (value: string) => {
+  const handleChangeTag = (value: string) => {
     setSelectedTag(value)
     fetchPostsByTag(value)
-    updateURL()
+    updateQueryParams()
   }
 
-  const fetchPostsByTag = async (tag: string) => {
-    if (!tag || tag === "all") {
-      fetchPosts(searchParams)
-      return
-    }
-    try {
-      const [postsResponse, usersResponse] = await Promise.all([selectPostListByTag(tag), selectUserList()])
-      const postsWithUsers = postsResponse.posts.map((post) => ({
-        ...post,
-        author: usersResponse.users.find((user) => user.id === post.userId),
-      }))
-
-      setPosts(postsWithUsers)
-      setTotal(postsResponse.total)
-    } catch (e) {
-      console.error("태그별 게시물 가져오기 오류:", e)
-    }
-  }
-
-  const onSearchPosts = async () => {
+  const handleSearchPost = async () => {
     if (!searchQuery) {
-      fetchPosts(searchParams)
+      fetchPosts({ skip, limit, searchQuery, sortBy, sortOrder })
       return
     }
 
     try {
+      setPostsLoading(true)
       const response = await searchPostList(searchQuery)
       const { posts, total } = response
       setPosts(posts)
       setTotal(total)
     } catch (error) {
       console.error("게시물 검색 오류:", error)
+    } finally {
+      setPostsLoading(false)
     }
   }
 
-  const fetchTags = async () => {
-    try {
-      const response = await selectTags()
-      setTags(response)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
+  const handleChangeSearchQuery = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
   }
 
-  useEffect(() => {
-    fetchTags()
-  }, [])
+  const handleChangeSortBy = (sortBy: string) => {
+    setSortBy(sortBy)
+  }
+
+  const handleChangeSortOrder = (sortOrder: string) => {
+    setSortOrder(sortOrder)
+  }
 
   return (
     <div className="flex gap-4">
-      <SearchForm
-        searchQuery={searchQuery}
-        setSearchQuery={(searchQuery) => setSearchParams({ ...searchParams, searchQuery })}
-        searchPosts={onSearchPosts}
-      />
-      <TagFilter tags={tags} selectedTag={selectedTag} onValueChange={onTagFilterValueChange} />
-      <SortingFilter sortBy={sortBy} setSortBy={(sortBy) => setSearchParams({ ...searchParams, sortBy })} />
-      <OrderSortingFilter
-        sortOrder={sortOrder}
-        setSortOrder={(sortOrder) => setSearchParams({ ...searchParams, sortOrder })}
-      />
+      <SearchForm value={searchQuery} onChange={handleChangeSearchQuery} searchPosts={handleSearchPost} />
+      <TagFilter tags={tags} selectedTag={selectedTag} onValueChange={handleChangeTag} />
+      <SortingFilter value={sortBy} onValueChange={handleChangeSortBy} />
+      <OrderSortingFilter value={sortOrder} onValueChange={handleChangeSortOrder} />
     </div>
   )
 }

@@ -2,12 +2,12 @@ import { Input } from "@/shared/ui/form"
 import { Search } from "lucide-react"
 
 interface SearchFormProps {
-  searchQuery: string
-  setSearchQuery: (query: string) => void
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   searchPosts: () => void
 }
 
-const SearchForm = ({ searchQuery, setSearchQuery, searchPosts }: SearchFormProps) => {
+const SearchForm = ({ value, onChange, searchPosts }: SearchFormProps) => {
   return (
     <div className="flex-1">
       <div className="relative">
@@ -15,8 +15,8 @@ const SearchForm = ({ searchQuery, setSearchQuery, searchPosts }: SearchFormProp
         <Input
           placeholder="게시물 검색..."
           className="pl-8"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={value}
+          onChange={onChange}
           onKeyPress={(e) => e.key === "Enter" && searchPosts()}
         />
       </div>

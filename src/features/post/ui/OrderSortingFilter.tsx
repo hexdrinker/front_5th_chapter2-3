@@ -1,13 +1,13 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select"
 
 interface OrderSortingFilterProps {
-  sortOrder: string
-  setSortOrder: (order: string) => void
+  value: string
+  onValueChange: (order: string) => void
 }
 
-const OrderSortingFilter = ({ sortOrder, setSortOrder }: OrderSortingFilterProps) => {
+const OrderSortingFilter = ({ value, onValueChange }: OrderSortingFilterProps) => {
   return (
-    <Select value={sortOrder} onValueChange={setSortOrder}>
+    <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="정렬 순서" />
       </SelectTrigger>

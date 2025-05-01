@@ -1,9 +1,9 @@
 import { commentsAtom } from "@/entities/comment/model/store"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom } from "jotai"
 import CommentItem from "@/features/comment/ui/CommentItem"
-import { searchParamsAtom } from "@/features/post/model/store"
 import { useEffect } from "react"
 import { selectComments } from "@/entities/comment/api/commentApi"
+import { useQueryParams } from "@/shared/lib/useQueryParams"
 
 interface CommentListProps {
   postId: number
@@ -11,7 +11,7 @@ interface CommentListProps {
 
 const CommentList = ({ postId }: CommentListProps) => {
   const [comments, setComments] = useAtom(commentsAtom)
-  const searchParams = useAtomValue(searchParamsAtom)
+  const { searchQuery } = useQueryParams()
 
   const fetchComments = async () => {
     if (comments[postId]) {
@@ -37,7 +37,7 @@ const CommentList = ({ postId }: CommentListProps) => {
   return (
     <div className="space-y-1">
       {comments[postId]?.map((comment) => (
-        <CommentItem key={comment.id} comment={comment} postId={postId} searchQuery={searchParams.searchQuery} />
+        <CommentItem key={comment.id} comment={comment} postId={postId} searchQuery={searchQuery} />
       ))}
     </div>
   )

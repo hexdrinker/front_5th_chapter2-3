@@ -1,23 +1,22 @@
 import { postsTotalAtom } from "@/entities/post/model/store"
-import { searchParamsAtom } from "@/features/post/model/store"
+import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtomValue } from "jotai"
 
 const Pagination = () => {
   const total = useAtomValue(postsTotalAtom)
-  const [searchParams, setSearchParams] = useAtom(searchParamsAtom)
-  const { limit, skip } = searchParams
+  const { limit, setLimit, skip, setSkip } = useQueryParams()
 
   const handleChangeLimit = (value: string) => {
-    setSearchParams({ ...searchParams, limit: Number(value) })
+    setLimit(Number(value))
   }
 
   const handleClickPrev = () => {
-    setSearchParams({ ...searchParams, skip: Math.max(0, skip - limit) })
+    setSkip(Math.max(0, skip - limit))
   }
 
   const handleClickNext = () => {
-    setSearchParams({ ...searchParams, skip: skip + limit })
+    setSkip(skip + limit)
   }
 
   return (

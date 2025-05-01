@@ -1,7 +1,7 @@
 import { highlightText } from "@/shared/lib/helpers"
 import TagItem from "@/features/post/ui/TagItem"
 import { useAtom } from "jotai"
-import { selectedTagAtom } from "@/entities/tag/model/store"
+import { tagAtom } from "@/shared/model/queryParams"
 
 interface PostTitleProps {
   post: {
@@ -12,7 +12,7 @@ interface PostTitleProps {
 }
 
 const PostTitle = ({ post, searchQuery }: PostTitleProps) => {
-  const [selectedTag, setSelectedTag] = useAtom(selectedTagAtom)
+  const [selectedTag, setSelectedTag] = useAtom(tagAtom)
 
   return (
     <div className="space-y-1">

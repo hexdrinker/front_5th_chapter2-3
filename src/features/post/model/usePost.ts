@@ -1,9 +1,10 @@
 import { useAtom, useSetAtom } from "jotai"
-import { postsAtom, postsTotalAtom, selectedPostAtom } from "@/entities/post/model/store"
+import { postsAtom, postsLoadingAtom, postsTotalAtom, selectedPostAtom } from "@/entities/post/model/store"
 import { createPostItem, selectPostList, selectPostListByTag, updatePostItem } from "@/entities/post/api/postApi"
 import { selectUserList } from "@/entities/user/api/userApi"
 import { IPostInsertRequest, IPostSearchParams, IPostUpdateRequest, IPostWithAuthor } from "@/entities/post/model/types"
-import { newPostAtom, searchParamsAtom, showAddDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
+import { newPostAtom, showAddDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
+import { useQueryParams } from "@/shared/lib/useQueryParams"
 
 const usePost = () => {
   const [posts, setPosts] = useAtom(postsAtom)
@@ -11,11 +12,13 @@ const usePost = () => {
   const [selectedPost] = useAtom(selectedPostAtom)
   const setShowAddDialog = useSetAtom(showAddDialogAtom)
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
-  const [searchParams] = useAtom(searchParamsAtom)
+  const setPostsLoading = useSetAtom(postsLoadingAtom)
   const [, setNewPost] = useAtom(newPostAtom)
+  const { skip, limit, sortBy, sortOrder, searchQuery } = useQueryParams()
 
   const fetchPosts = async (searchParams: IPostSearchParams) => {
     try {
+      setPostsLoading(true)
       const postsResponse = await selectPostList(searchParams)
       const usersResponse = await selectUserList()
 
@@ -30,6 +33,8 @@ const usePost = () => {
       setTotal(total)
     } catch (error) {
       console.error("게시물 가져오기 오류:", error)
+    } finally {
+      setPostsLoading(false)
     }
   }
 
@@ -56,10 +61,11 @@ const usePost = () => {
 
   const fetchPostsByTag = async (tag: string) => {
     if (!tag || tag === "all") {
-      fetchPosts(searchParams)
+      fetchPosts({ skip, limit, sortBy, sortOrder, searchQuery })
       return
     }
     try {
+      setPostsLoading(true)
       const [postsResponse, usersResponse] = await Promise.all([selectPostListByTag(tag), selectUserList()])
       const postsWithUsers = postsResponse.posts.map((post) => ({
         ...post,
@@ -70,6 +76,8 @@ const usePost = () => {
       setTotal(postsResponse.total)
     } catch (e) {
       console.error("태그별 게시물 가져오기 오류:", e)
+    } finally {
+      setPostsLoading(false)
     }
   }
 
