@@ -14,20 +14,13 @@ import { useAtomValue } from "jotai"
 import { tagAtom } from "@/shared/model/queryParams"
 import usePost from "@/features/post/model/usePost"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
-import useTag from "@/entities/tag/model/useTag"
 
 const PostsManagerPage = () => {
   const selectedTag = useAtomValue(tagAtom)
   const { fetchPosts, fetchPostsByTag } = usePost()
   const { skip, limit, sortBy, sortOrder, searchQuery } = useQueryParams()
-  const { fetchTags } = useTag()
 
   useEffect(() => {
-    fetchTags()
-  }, [])
-
-  useEffect(() => {
-    console.log(1)
     if (selectedTag) {
       fetchPostsByTag(selectedTag)
     } else {

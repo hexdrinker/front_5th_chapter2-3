@@ -8,13 +8,13 @@ import { tagAtom } from "@/shared/model/queryParams"
 import { searchPostList } from "@/entities/post/api/postApi"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { postsLoadingAtom } from "@/entities/post/model/store"
-import useTag from "@/entities/tag/model/useTag"
+import useTagsQuery from "@/entities/tag/api/useTagsQuery"
 
 const FilterSection = () => {
   const setPostsLoading = useSetAtom(postsLoadingAtom)
   const [selectedTag, setSelectedTag] = useAtom(tagAtom)
   const { fetchPosts, setPosts, setTotal, fetchPostsByTag } = usePost()
-  const { tags } = useTag()
+  const { data: tags } = useTagsQuery()
   const { skip, limit, searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder, updateQueryParams } =
     useQueryParams()
 
@@ -58,7 +58,7 @@ const FilterSection = () => {
   return (
     <div className="flex gap-4">
       <SearchForm value={searchQuery} onChange={handleChangeSearchQuery} searchPosts={handleSearchPost} />
-      <TagFilter tags={tags} selectedTag={selectedTag} onValueChange={handleChangeTag} />
+      <TagFilter tags={tags || []} selectedTag={selectedTag} onValueChange={handleChangeTag} />
       <SortingFilter value={sortBy} onValueChange={handleChangeSortBy} />
       <OrderSortingFilter value={sortOrder} onValueChange={handleChangeSortOrder} />
     </div>
