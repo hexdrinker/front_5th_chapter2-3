@@ -3,7 +3,7 @@ import { Plus } from "lucide-react"
 import { showAddDialogAtom } from "../model/store"
 import { useSetAtom } from "jotai"
 
-const PostCardHeader = () => {
+const PostListCardHeader = () => {
   const setShowAddDialog = useSetAtom(showAddDialogAtom)
 
   return (
@@ -19,4 +19,4 @@ const PostCardHeader = () => {
   )
 }
 
-export default PostCardHeader
+export default PostListCardHeader
