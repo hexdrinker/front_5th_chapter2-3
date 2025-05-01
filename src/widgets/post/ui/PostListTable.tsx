@@ -6,23 +6,25 @@ import { usePostsByTagQuery, usePostsQuery } from "@/entities/post/api/queries"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/shared/ui"
-import { postsAtom } from "@/entities/post/model/store"
-import { useAtomValue } from "jotai"
+import usePostsData from "@/entities/post/api/usePostsData"
 
 const PostListTable = () => {
-  const posts = useAtomValue(postsAtom)
   const { skip, limit, searchQuery, tag, initialized } = useQueryParams()
 
-  const { isLoading: postsLoading } = usePostsQuery(limit, skip, {
+  usePostsQuery(limit, skip, {
     enabled: !tag && initialized,
   })
-  const { isLoading: tagPostsLoading } = usePostsByTagQuery(tag, {
+  usePostsByTagQuery(tag, {
     enabled: !!tag && initialized,
   })
 
+  const { getPostsData, isLoading } = usePostsData()
+
+  const activeData = getPostsData()
+  const { posts } = activeData
+
   const { data: usersData } = useUsersQuery()
   const users = useMemo(() => usersData?.users || [], [usersData])
-  const loading = useMemo(() => postsLoading || tagPostsLoading, [postsLoading, tagPostsLoading])
 
   const postsWithAuthor = useMemo(() => {
     return posts?.map((post) => ({
@@ -31,7 +33,7 @@ const PostListTable = () => {
     }))
   }, [posts, users])
 
-  if (loading) {
+  if (isLoading) {
     return <div className="flex justify-center p-4">로딩 중...</div>
   }
 

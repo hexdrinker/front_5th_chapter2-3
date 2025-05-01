@@ -1,12 +1,9 @@
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import { newPostAtom, showAddDialogAtom } from "@/features/post/model/store"
-import { postsAtom } from "@/entities/post/model/store"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 import { useCreatePost } from "@/entities/post/api/mutations"
-import { IPost } from "@/entities/post/model/types"
 
 const DialogPostAdd = () => {
-  const setPosts = useSetAtom(postsAtom)
   const [newPost, setNewPost] = useAtom(newPostAtom)
   const [showAddDialog, setShowAddDialog] = useAtom(showAddDialogAtom)
   const { mutate: createPost } = useCreatePost()
@@ -18,17 +15,7 @@ const DialogPostAdd = () => {
   const handleClickAddButton = async () => {
     try {
       await createPost(newPost, {
-        onSuccess: (data) => {
-          const newPost: IPost = {
-            id: data.id,
-            title: data.title,
-            body: data.body,
-            userId: data.userId,
-            tags: [],
-            reactions: { likes: 0, dislikes: 0 },
-            views: 0,
-          }
-          setPosts((prev) => [newPost, ...prev])
+        onSuccess: () => {
           setShowAddDialog(false)
         },
       })

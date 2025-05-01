@@ -1,10 +1,12 @@
-import { postsTotalAtom } from "@/entities/post/model/store"
+import usePostsData from "@/entities/post/api/usePostsData"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
-import { useAtomValue } from "jotai"
 
 const Pagination = () => {
-  const total = useAtomValue(postsTotalAtom)
+  const { getPostsData } = usePostsData()
+
+  const activeData = getPostsData()
+  const { total } = activeData
   const { limit, setLimit, skip, setSkip } = useQueryParams()
 
   const handleChangeLimit = (value: string) => {

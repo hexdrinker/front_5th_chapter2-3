@@ -1,14 +1,12 @@
 import { useAtom } from "jotai"
 import { showEditDialogAtom } from "@/features/post/model/store"
-import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
+import { selectedPostAtom } from "@/entities/post/model/store"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 import { useUpdatePost } from "@/entities/post/api/mutations"
-import { IPost } from "@/entities/post/model/types"
 
 const DialogPostEdit = () => {
   const [showEditDialog, setShowEditDialog] = useAtom(showEditDialogAtom)
   const [selectedPost, setSelectedPost] = useAtom(selectedPostAtom)
-  const [posts, setPosts] = useAtom(postsAtom)
   const { mutate: updatePost } = useUpdatePost()
 
   const handleClickUpdateButton = async () => {
@@ -18,17 +16,7 @@ const DialogPostEdit = () => {
 
     try {
       await updatePost(selectedPost, {
-        onSuccess: (data) => {
-          const updatedPost: IPost = {
-            id: data.id,
-            title: data.title,
-            body: data.body,
-            userId: data.userId,
-            tags: data.tags,
-            reactions: data.reactions,
-            views: 0,
-          }
-          setPosts(posts.map((post) => (post.id === selectedPost.id ? updatedPost : post)))
+        onSuccess: () => {
           setShowEditDialog(false)
         },
       })
