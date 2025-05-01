@@ -8,7 +8,7 @@ import { tagAtom } from "@/shared/model/queryParams"
 import { searchPostList } from "@/entities/post/api/postApi"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { postsLoadingAtom } from "@/entities/post/model/store"
-import useTagsQuery from "@/entities/tag/api/useTagsQuery"
+import { useTagsQuery } from "@/entities/tag/api/queries"
 
 const FilterSection = () => {
   const setPostsLoading = useSetAtom(postsLoadingAtom)
