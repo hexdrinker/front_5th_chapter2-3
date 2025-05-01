@@ -1,4 +1,3 @@
 import { atom } from "jotai"
-import { IUserDetail } from "@/entities/user/model/types"
 
-export const selectedUserAtom = atom<IUserDetail | null>(null)
+export const selectedUserIdAtom = atom<number | null>(null)

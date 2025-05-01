@@ -11,7 +11,7 @@ interface IUserListResponse {
   limit: number
 }
 
-interface IUserDetail {
+interface IUserDetailResponse {
   image: string
   username: string
   firstName: string
@@ -30,4 +30,4 @@ interface IUserDetail {
   }
 }
 
-export type { IUser, IUserListResponse, IUserDetail }
+export type { IUser, IUserListResponse, IUserDetailResponse }
