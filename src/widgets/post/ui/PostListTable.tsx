@@ -1,7 +1,15 @@
+import { postsLoadingAtom } from "@/entities/post/model/store"
 import PostList from "@/features/post/ui/PostList"
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/shared/ui"
+import { useAtomValue } from "jotai"
 
 const PostListTable = () => {
+  const loading = useAtomValue(postsLoadingAtom)
+
+  if (loading) {
+    return <div className="flex justify-center p-4">로딩 중...</div>
+  }
+
   return (
     <Table>
       <TableHeader>
