@@ -1,5 +1,3 @@
-import { selectComments } from "@/entities/comment/api/commentApi"
-import { deletePostItem } from "@/entities/post/api/postApi"
 import { postsAtom, selectedPostAtom } from "@/entities/post/model/store"
 import { IPost } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
@@ -8,6 +6,7 @@ import { showDetailDialogAtom, showEditDialogAtom } from "@/features/post/model/
 import { useAtom, useSetAtom } from "jotai"
 import { selectedUserAtom } from "@/entities/user/model/store"
 import { showUserModalAtom } from "@/features/user/model/store"
+import { useDeleteComment } from "@/entities/comment/api/mutations"
 
 const usePostEventHandler = () => {
   const [posts, setPosts] = useAtom(postsAtom)
@@ -16,10 +15,10 @@ const usePostEventHandler = () => {
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
   const setSelectedUser = useSetAtom(selectedUserAtom)
   const setShowUserModal = useSetAtom(showUserModalAtom)
+  const { mutate: deleteComment } = useDeleteComment()
 
   const handleClickPostDetail = (post: IPost) => {
     setSelectedPost(post)
-    selectComments(post.id)
     setShowDetailDialog(true)
   }
 
@@ -30,7 +29,7 @@ const usePostEventHandler = () => {
 
   const handleClickPostDelete = async (id: number) => {
     try {
-      await deletePostItem(id)
+      await deleteComment(id)
       setPosts(posts.filter((post) => post.id !== id))
     } catch (error) {
       console.error("게시물 삭제 오류:", error)

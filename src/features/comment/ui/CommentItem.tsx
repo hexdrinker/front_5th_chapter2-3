@@ -9,7 +9,7 @@ import { showEditCommentDialogAtom } from "@/features/comment/model/store"
 
 import { IComment } from "@/entities/comment/model/types"
 import { commentsAtom, selectedCommentAtom } from "@/entities/comment/model/store"
-import { deleteComment, likeComment } from "@/entities/comment/api/commentApi"
+import { useLikeComment, useDeleteComment } from "@/entities/comment/api/mutations"
 
 interface CommentItemProps {
   postId: number
@@ -21,14 +21,22 @@ const CommentItem = ({ postId, comment, searchQuery }: CommentItemProps) => {
   const setComments = useSetAtom(commentsAtom)
   const setSelectedComment = useSetAtom(selectedCommentAtom)
   const setShowEditCommentDialog = useSetAtom(showEditCommentDialogAtom)
+  const { mutate: deleteComment } = useDeleteComment()
+  const { mutate: likeComment } = useLikeComment()
 
   const handleClickLikeButton = async () => {
     try {
-      const response = await likeComment(comment.id, postId)
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].map((item) => (item.id === response.id ? { ...response, likes: item.likes + 1 } : item)),
-      }))
+      await likeComment(
+        { id: comment.id, likes: comment.likes + 1 },
+        {
+          onSuccess: (data) => {
+            setComments((prev) => ({
+              ...prev,
+              [postId]: prev[postId].map((item) => (item.id === data.id ? { ...data, likes: item.likes + 1 } : item)),
+            }))
+          },
+        },
+      )
     } catch (error) {
       console.error("댓글 좋아요 오류:", error)
     }
@@ -54,31 +62,10 @@ const CommentItem = ({ postId, comment, searchQuery }: CommentItemProps) => {
   return (
     <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
       <CommentItemContent comment={comment} searchQuery={searchQuery} />
-      {/* <div className="flex items-center space-x-2 overflow-hidden">
-        <span className="font-medium truncate">{comment.user.username}:</span>
-        <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
-      </div> */}
       <div className="flex items-center space-x-1">
         <CommentLikeButton likes={comment.likes} onClick={handleClickLikeButton} />
         <CommentEditButton onClick={handleClickEditButton} />
         <CommentDeleteButton onClick={handleClickDeleteButton} />
-        {/* <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId)}>
-          <ThumbsUp className="w-3 h-3" />
-          <span className="ml-1 text-xs">{comment.likes}</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setSelectedComment(comment)
-            setShowEditCommentDialog(true)
-          }}
-        >
-          <Edit2 className="w-3 h-3" />
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => deleteComment(comment.id, postId)}>
-          <Trash2 className="w-3 h-3" />
-        </Button> */}
       </div>
     </div>
   )

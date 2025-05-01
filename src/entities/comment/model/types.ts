@@ -22,4 +22,29 @@ interface ICommentUpdateRequest {
   body: string
 }
 
-export type { IComment, ICommentListResponse, ICommentInsertRequest, ICommentUpdateRequest }
+interface ICommentCreateResponse {
+  id: number
+  postId: number
+  body: string
+  user: {
+    fullName: string
+    id: number
+    username: string
+  }
+}
+
+interface ICommentLikeResponse extends ICommentCreateResponse {
+  likes: number
+}
+
+type ICommentUpdateResponse = ICommentCreateResponse
+
+export type {
+  IComment,
+  ICommentListResponse,
+  ICommentInsertRequest,
+  ICommentUpdateRequest,
+  ICommentCreateResponse,
+  ICommentUpdateResponse,
+  ICommentLikeResponse,
+}

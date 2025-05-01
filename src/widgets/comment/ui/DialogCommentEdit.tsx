@@ -2,13 +2,14 @@ import { useAtom, useSetAtom } from "jotai"
 import { showEditCommentDialogAtom } from "@/features/comment/model/store"
 import { BaseDialog, Button, Textarea } from "@/shared/ui"
 import { commentsAtom, selectedCommentAtom } from "@/entities/comment/model/store"
-import { updateComment } from "@/entities/comment/api/commentApi"
 import { IComment } from "@/entities/comment/model/types"
+import { useUpdateComment } from "@/entities/comment/api/mutations"
 
 const DialogCommentEdit = () => {
   const [showEditCommentDialog, setShowEditCommentDialog] = useAtom(showEditCommentDialogAtom)
   const setComments = useSetAtom(commentsAtom)
   const [selectedComment, setSelectedComment] = useAtom(selectedCommentAtom)
+  const { mutate: updateComment } = useUpdateComment()
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!selectedComment) {
@@ -25,12 +26,19 @@ const DialogCommentEdit = () => {
     }
 
     try {
-      const response = await updateComment(selectedComment.id, { body: selectedComment.body })
-      setComments((prev) => ({
-        ...prev,
-        [response.postId]: prev[response.postId].map((comment) => (comment.id === response.id ? response : comment)),
-      }))
-      setShowEditCommentDialog(false)
+      await updateComment(
+        { id: selectedComment.id, comment: { body: selectedComment.body } },
+        {
+          onSuccess: (data) => {
+            const newComment: IComment = { id: data.id, postId: data.postId, body: data.body, likes: 0 }
+            setComments((prev) => ({
+              ...prev,
+              [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? newComment : comment)),
+            }))
+            setShowEditCommentDialog(false)
+          },
+        },
+      )
     } catch (error) {
       console.error("댓글 업데이트 오류:", error)
     }

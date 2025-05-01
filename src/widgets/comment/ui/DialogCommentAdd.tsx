@@ -1,5 +1,6 @@
-import { InsertComment } from "@/entities/comment/api/commentApi"
+import { useCreateComment } from "@/entities/comment/api/mutations"
 import { commentsAtom } from "@/entities/comment/model/store"
+import { IComment } from "@/entities/comment/model/types"
 import { selectedPostAtom } from "@/entities/post/model/store"
 import { newCommentAtom, showAddCommentDialogAtom } from "@/features/comment/model/store"
 import { BaseDialog, Button, Textarea } from "@/shared/ui"
@@ -10,6 +11,7 @@ const DialogCommentAdd = () => {
   const [newComment, setNewComment] = useAtom(newCommentAtom)
   const setComments = useSetAtom(commentsAtom)
   const selectedPost = useAtomValue(selectedPostAtom)
+  const { mutate: createComment } = useCreateComment()
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment({ ...newComment, body: e.target.value })
@@ -21,10 +23,17 @@ const DialogCommentAdd = () => {
     }
 
     try {
-      const response = await InsertComment({ ...newComment, postId: selectedPost.id })
-      setComments((prev) => ({ ...prev, [response.postId]: [...(prev[response.postId] || []), response] }))
-      setShowAddCommentDialog(false)
-      setNewComment({ body: "", postId: null, userId: 1 })
+      await createComment(
+        { ...newComment, postId: selectedPost.id },
+        {
+          onSuccess: (data) => {
+            const newComment: IComment = { id: data.id, postId: data.postId, body: data.body, likes: 0 }
+            setComments((prev) => ({ ...prev, [data.postId]: [...(prev[data.postId] || []), newComment] }))
+            setShowAddCommentDialog(false)
+            setNewComment({ body: "", postId: null, userId: 1 })
+          },
+        },
+      )
     } catch (error) {
       console.error("댓글 추가 오류:", error)
     }
