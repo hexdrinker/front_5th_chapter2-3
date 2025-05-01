@@ -24,13 +24,19 @@ interface IPostWithAuthor extends IPost {
   author?: IUser
 }
 
-interface IPostInsertRequest {
+interface IPostCreateRequest {
   title: string
   body: string
   userId: number
 }
 
+interface IPostCreateResponse extends IPostCreateRequest {
+  id: number
+}
+
 type IPostUpdateRequest = IPost
+
+type IPostUpdateResponse = Omit<IPost, "views">
 
 interface IPostSearchParams {
   limit: number
@@ -40,4 +46,13 @@ interface IPostSearchParams {
   sortOrder: string
 }
 
-export type { IPost, IPostWithAuthor, IPostListResponse, IPostInsertRequest, IPostUpdateRequest, IPostSearchParams }
+export type {
+  IPost,
+  IPostWithAuthor,
+  IPostListResponse,
+  IPostCreateRequest,
+  IPostUpdateRequest,
+  IPostUpdateResponse,
+  IPostSearchParams,
+  IPostCreateResponse,
+}

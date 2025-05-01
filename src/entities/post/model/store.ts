@@ -1,7 +1,7 @@
 import { atom } from "jotai"
-import type { IPostWithAuthor } from "@/entities/post/model/types"
+import type { IPost, IPostWithAuthor } from "@/entities/post/model/types"
 
-export const postsAtom = atom<IPostWithAuthor[]>([])
+export const postsAtom = atom<IPost[]>([])
 
 export const postsLoadingAtom = atom<boolean>(false)
 
