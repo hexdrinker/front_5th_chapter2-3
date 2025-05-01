@@ -6,5 +6,6 @@ const searchQueryAtom = atom<string>("")
 const sortByAtom = atom<string>("")
 const sortOrderAtom = atom<string>("asc")
 const tagAtom = atom<string>("")
+const initializedAtom = atom<boolean>(false)
 
-export { skipAtom, limitAtom, searchQueryAtom, sortByAtom, sortOrderAtom, tagAtom }
+export { skipAtom, limitAtom, searchQueryAtom, sortByAtom, sortOrderAtom, tagAtom, initializedAtom }

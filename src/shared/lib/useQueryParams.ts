@@ -1,6 +1,14 @@
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { skipAtom, limitAtom, searchQueryAtom, sortByAtom, sortOrderAtom, tagAtom } from "@/shared/model/queryParams"
+import {
+  skipAtom,
+  limitAtom,
+  searchQueryAtom,
+  sortByAtom,
+  sortOrderAtom,
+  tagAtom,
+  initializedAtom,
+} from "@/shared/model/queryParams"
 import { useAtom } from "jotai"
 
 export const useQueryParams = () => {
@@ -14,6 +22,7 @@ export const useQueryParams = () => {
   const [sortBy, setSortBy] = useAtom(sortByAtom)
   const [sortOrder, setSortOrder] = useAtom(sortOrderAtom)
   const [tag, setTag] = useAtom(tagAtom)
+  const [initialized, setInitialized] = useAtom(initializedAtom)
 
   const updateQueryParams = () => {
     const params = new URLSearchParams()
@@ -33,6 +42,7 @@ export const useQueryParams = () => {
     setSortBy(queryParams.get("sortBy") || "")
     setSortOrder(queryParams.get("sortOrder") || "asc")
     setTag(queryParams.get("tag") || "")
+    setInitialized(true)
   }, [location.search])
 
   useEffect(() => {
@@ -53,5 +63,7 @@ export const useQueryParams = () => {
     tag,
     setTag,
     updateQueryParams,
+    initialized,
+    setInitialized,
   }
 }
