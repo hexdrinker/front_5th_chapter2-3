@@ -1,17 +1,17 @@
 import { useCreateComment } from "@/entities/comment/api/mutations"
 import { commentsAtom } from "@/entities/comment/model/store"
 import { IComment } from "@/entities/comment/model/types"
-import { selectedPostAtom } from "@/entities/post/model/store"
+import usePostStore from "@/entities/post/model/usePostStore"
 import { newCommentAtom, showAddCommentDialogAtom } from "@/features/comment/model/store"
 import { BaseDialog, Button, Textarea } from "@/shared/ui"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 
 const DialogCommentAdd = () => {
   const [showAddCommentDialog, setShowAddCommentDialog] = useAtom(showAddCommentDialogAtom)
   const [newComment, setNewComment] = useAtom(newCommentAtom)
   const setComments = useSetAtom(commentsAtom)
-  const selectedPost = useAtomValue(selectedPostAtom)
   const { mutate: createComment } = useCreateComment()
+  const { selectedPost } = usePostStore()
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewComment({ ...newComment, body: e.target.value })

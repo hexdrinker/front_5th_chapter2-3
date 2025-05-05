@@ -1,3 +1,3 @@
 import { atom } from "jotai"
 
-export const showUserModalAtom = atom(false)
+export const showUserDialogAtom = atom(false)
