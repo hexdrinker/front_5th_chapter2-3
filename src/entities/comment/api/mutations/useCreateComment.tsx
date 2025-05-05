@@ -1,15 +1,15 @@
 import { useMutation } from "@tanstack/react-query"
 import { fetcher } from "@/shared/api/fetcher"
-import { ICommentCreateResponse, ICommentInsertRequest } from "@/entities/comment/model/types"
+import { ICommentCreateResponse, ICommentCreateRequest } from "@/entities/comment/model/types"
 
-const createComment = (newComment: ICommentInsertRequest) =>
+const createComment = (newComment: ICommentCreateRequest) =>
   fetcher.post<ICommentCreateResponse>("comments/add", {
-    body: JSON.stringify(newComment),
+    ...newComment,
   })
 
 const useCreateComment = () =>
   useMutation({
-    mutationFn: (newComment: ICommentInsertRequest) => createComment(newComment),
+    mutationFn: (newComment: ICommentCreateRequest) => createComment(newComment),
   })
 
 export default useCreateComment

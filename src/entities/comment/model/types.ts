@@ -17,7 +17,7 @@ interface ICommentListResponse {
   limit: number
 }
 
-interface ICommentInsertRequest {
+interface ICommentCreateRequest {
   body: string
   postId: number
   userId: number
@@ -45,7 +45,7 @@ type ICommentUpdateResponse = IComment
 export type {
   IComment,
   ICommentListResponse,
-  ICommentInsertRequest,
+  ICommentCreateRequest,
   ICommentUpdateRequest,
   ICommentCreateResponse,
   ICommentUpdateResponse,

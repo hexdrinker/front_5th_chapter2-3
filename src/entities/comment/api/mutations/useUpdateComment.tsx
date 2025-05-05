@@ -4,7 +4,7 @@ import { ICommentUpdateRequest, ICommentUpdateResponse } from "@/entities/commen
 
 const updateComment = (id: number, comment: ICommentUpdateRequest) =>
   fetcher.put<ICommentUpdateResponse>(`comments/${id}`, {
-    body: JSON.stringify(comment),
+    ...comment,
   })
 
 const useUpdateComment = () =>

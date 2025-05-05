@@ -4,7 +4,7 @@ import { ICommentLikeResponse } from "@/entities/comment/model/types"
 
 const likeComment = (id: number, likes: number) =>
   fetcher.patch<ICommentLikeResponse>(`comments/${id}`, {
-    body: JSON.stringify({ likes }),
+    likes,
   })
 
 const useLikeComment = () =>
