@@ -1,28 +1,30 @@
-import ky, { Options, ResponsePromise } from "ky"
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { API_BASE_URL } from "@/shared/api/constants"
 
-export const client = ky.create({
-  prefixUrl: API_BASE_URL,
+const client = axios.create({
+  baseURL: API_BASE_URL,
   headers: {
     "content-type": "application/json",
   },
-  hooks: {
-    afterResponse: [
-      async (_request, _options, response) => {
-        return response
-      },
-    ],
-  },
 })
 
-export async function parseResponse<T>(response: ResponsePromise) {
-  return await response.json<T>()
+client.interceptors.response.use(
+  <T>(response: AxiosResponse<T>): AxiosResponse<T> => response,
+  (error: unknown): Promise<never> => Promise.reject(error),
+)
+
+async function parseResponse<T>(response: Promise<AxiosResponse<T>>): Promise<T> {
+  const result = await response
+  return result.data
 }
 
 export const fetcher = {
-  get: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.get(endpoint, options)),
-  post: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.post(endpoint, options)),
-  put: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.put(endpoint, options)),
-  delete: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.delete(endpoint, options)),
-  patch: <T>(endpoint: string, options?: Options) => parseResponse<T>(client.patch(endpoint, options)),
+  get: <T>(endpoint: string, options?: AxiosRequestConfig) => parseResponse<T>(client.get<T>(endpoint, options)),
+  post: <T, D = unknown>(endpoint: string, data?: D, options?: AxiosRequestConfig) =>
+    parseResponse<T>(client.post<T, AxiosResponse<T>, D>(endpoint, data, options)),
+  put: <T, D = unknown>(endpoint: string, data?: D, options?: AxiosRequestConfig) =>
+    parseResponse<T>(client.put<T, AxiosResponse<T>, D>(endpoint, data, options)),
+  delete: <T>(endpoint: string, options?: AxiosRequestConfig) => parseResponse<T>(client.delete<T>(endpoint, options)),
+  patch: <T, D = unknown>(endpoint: string, data?: D, options?: AxiosRequestConfig) =>
+    parseResponse<T>(client.patch<T, AxiosResponse<T>, D>(endpoint, data, options)),
 }
