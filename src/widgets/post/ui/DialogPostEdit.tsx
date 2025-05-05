@@ -1,13 +1,13 @@
 import { useAtom } from "jotai"
 import { showEditDialogAtom } from "@/features/post/model/store"
-import { selectedPostAtom } from "@/entities/post/model/store"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 import { useUpdatePost } from "@/entities/post/api/mutations"
+import usePostStore from "@/entities/post/model/usePostStore"
 
 const DialogPostEdit = () => {
   const [showEditDialog, setShowEditDialog] = useAtom(showEditDialogAtom)
-  const [selectedPost, setSelectedPost] = useAtom(selectedPostAtom)
-  const { mutate: updatePost } = useUpdatePost()
+  const { mutate: updatePostMutation } = useUpdatePost()
+  const { selectedPost, setSelectedPost, updatePost } = usePostStore()
 
   const handleClickUpdateButton = async () => {
     if (!selectedPost) {
@@ -15,9 +15,10 @@ const DialogPostEdit = () => {
     }
 
     try {
-      await updatePost(selectedPost, {
+      await updatePostMutation(selectedPost, {
         onSuccess: () => {
           setShowEditDialog(false)
+          updatePost(selectedPost)
         },
       })
     } catch (error) {

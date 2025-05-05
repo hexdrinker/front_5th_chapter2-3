@@ -1,5 +1,4 @@
 import usePostsQuery from "./usePostsQuery"
-import usePostsByTagQuery from "./usePostsByTagQuery"
-import usePostsBySearchQuery from "./usePostsBySearchQuery"
+import useSearchPostsQuery from "./useSearchPostsQuery"
 
-export { usePostsQuery, usePostsByTagQuery, usePostsBySearchQuery }
+export { usePostsQuery, useSearchPostsQuery }

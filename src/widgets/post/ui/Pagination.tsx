@@ -3,10 +3,7 @@ import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
 
 const Pagination = () => {
-  const { getPostsData } = usePostsData()
-
-  const activeData = getPostsData()
-  const { total } = activeData
+  const { total } = usePostsData()
   const { limit, setLimit, skip, setSkip } = useQueryParams()
 
   const handleChangeLimit = (value: string) => {

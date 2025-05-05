@@ -1,35 +1,36 @@
 import { useSetAtom } from "jotai"
 
 import { showDetailDialogAtom, showEditDialogAtom } from "@/features/post/model/store"
-import { showUserModalAtom } from "@/features/user/model/store"
+import { showUserDialogAtom } from "@/features/user/model/store"
 
 import { selectedUserIdAtom } from "@/entities/user/model/store"
-import { IPost } from "@/entities/post/model/types"
+import { IPostWithAuthor } from "@/entities/post/model/types"
 import { IUser } from "@/entities/user/model/types"
-import { selectedPostAtom } from "@/entities/post/model/store"
 import { useDeletePost } from "@/entities/post/api/mutations"
+import usePostStore from "@/entities/post/model/usePostStore"
 
 const usePostEventHandler = () => {
-  const setSelectedPost = useSetAtom(selectedPostAtom)
   const setShowDetailDialog = useSetAtom(showDetailDialogAtom)
   const setShowEditDialog = useSetAtom(showEditDialogAtom)
   const setSelectedUserId = useSetAtom(selectedUserIdAtom)
-  const setShowUserModal = useSetAtom(showUserModalAtom)
-  const { mutate: deletePost } = useDeletePost()
+  const setShowUserDialog = useSetAtom(showUserDialogAtom)
+  const { mutate: deletePostMutation } = useDeletePost()
+  const { deletePost, setSelectedPost } = usePostStore()
 
-  const handleClickPostDetail = (post: IPost) => {
+  const handleClickPostDetail = (post: IPostWithAuthor) => {
     setSelectedPost(post)
     setShowDetailDialog(true)
   }
 
-  const handleClickPostEdit = (post: IPost) => {
+  const handleClickPostEdit = (post: IPostWithAuthor) => {
     setSelectedPost(post)
     setShowEditDialog(true)
   }
 
   const handleClickPostDelete = async (id: number) => {
     try {
-      await deletePost(id)
+      await deletePostMutation(id)
+      deletePost(id)
     } catch (error) {
       console.error("게시물 삭제 오류:", error)
     }
@@ -40,7 +41,7 @@ const usePostEventHandler = () => {
       return
     }
     setSelectedUserId(user.id)
-    setShowUserModal(true)
+    setShowUserDialog(true)
   }
 
   return {

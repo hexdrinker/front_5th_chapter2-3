@@ -6,19 +6,14 @@ import OrderSortingFilter from "@/features/post/ui/OrderSortingFilter"
 import { tagAtom } from "@/shared/model/queryParams"
 import { useQueryParams } from "@/shared/lib/useQueryParams"
 import { useTagsQuery } from "@/entities/tag/api/queries"
-import { usePostsBySearchQuery, usePostsQuery } from "@/entities/post/api/queries"
+import usePostsData from "@/entities/post/api/usePostsData"
 
 const FilterSection = () => {
   const [selectedTag, setSelectedTag] = useAtom(tagAtom)
   const { data: tags } = useTagsQuery()
-  const { skip, limit, searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder, updateQueryParams } =
+  const { searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder, updateQueryParams } =
     useQueryParams()
-  const { refetch: refetchPosts } = usePostsQuery(limit, skip, {
-    enabled: false,
-  })
-  const { refetch: refetchSearch } = usePostsBySearchQuery(searchQuery || "", {
-    enabled: false,
-  })
+  const { searchPosts } = usePostsData()
 
   const handleChangeTag = (value: string) => {
     setSelectedTag(value)
@@ -26,13 +21,8 @@ const FilterSection = () => {
   }
 
   const handleSearchPost = async () => {
-    if (!searchQuery) {
-      await refetchPosts()
-      return
-    }
-
     try {
-      await refetchSearch()
+      await searchPosts()
     } catch (error) {
       console.error("게시물 검색 오류:", error)
     }

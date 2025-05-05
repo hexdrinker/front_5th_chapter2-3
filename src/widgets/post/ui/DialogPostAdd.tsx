@@ -2,24 +2,28 @@ import { useAtom } from "jotai"
 import { newPostAtom, showAddDialogAtom } from "@/features/post/model/store"
 import { BaseDialog, Button, Input, Textarea } from "@/shared/ui"
 import { useCreatePost } from "@/entities/post/api/mutations"
+import usePostStore from "@/entities/post/model/usePostStore"
 
 const DialogPostAdd = () => {
   const [newPost, setNewPost] = useAtom(newPostAtom)
   const [showAddDialog, setShowAddDialog] = useAtom(showAddDialogAtom)
-  const { mutate: createPost } = useCreatePost()
+  const { mutate: createPostMutation } = useCreatePost()
+  const { createPost } = usePostStore()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewPost({ ...newPost, [e.target.name]: e.target.value })
   }
 
   const handleClickAddButton = async () => {
+    console.log(newPost)
     try {
-      await createPost(newPost, {
-        onSuccess: () => {
+      await createPostMutation(newPost, {
+        onSuccess: (createdPost) => {
           setShowAddDialog(false)
+          setNewPost(newPost)
+          createPost({ ...createdPost, tags: [], reactions: { likes: 0, dislikes: 0 }, views: 0 })
         },
       })
-      setNewPost(newPost)
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }

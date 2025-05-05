@@ -1,34 +1,48 @@
-import { useIsFetching, useQueryClient } from "@tanstack/react-query"
-import { postQueryKeys } from "@/entities/post/api/queryKeys"
-import { IPostListResponse } from "@/entities/post/model/types"
+import { useQueryParams } from "@/shared/lib/useQueryParams"
+import { usePostsQuery, useSearchPostsQuery } from "@/entities/post/api/queries"
+import { useEffect, useState } from "react"
+import usePostStore from "@/entities/post/model/usePostStore"
 
 const usePostsData = () => {
-  const queryClient = useQueryClient()
+  const { skip, limit, tag, sortOrder, sortBy, searchQuery } = useQueryParams()
+  const [isSearchActive, setIsSearchActive] = useState(false)
+  const {
+    posts: postsBySearch,
+    total: totalBySearch,
+    isLoading: isSearching,
+    refetch: searchPosts,
+  } = useSearchPostsQuery(searchQuery)
+  const { posts: storedPosts, setPosts } = usePostStore()
 
-  const getCachedPostsData = () => {
-    const queries = queryClient.getQueriesData<IPostListResponse>({
-      queryKey: postQueryKeys.all,
-    })
+  const { posts: defaultPosts, total: defaultTotal, isLoading } = usePostsQuery({ skip, limit, tag, sortOrder, sortBy })
 
-    type QueryDataTuple = [readonly unknown[], IPostListResponse | undefined]
-    const emptyResult: QueryDataTuple = [[], undefined]
+  const hasSearch = searchQuery.trim().length > 0
 
-    const mostRecentQuery = queries.reduce<QueryDataTuple>((prev, curr) => {
-      const [, data] = curr
-      if (!prev[1] || (data && data.posts.length > 0)) return curr
-      return prev
-    }, emptyResult)
+  const posts = isSearchActive ? postsBySearch : defaultPosts
+  const total = isSearchActive ? totalBySearch : defaultTotal
+  const loading = isSearchActive ? isSearching : isLoading
 
-    return mostRecentQuery[1] || { posts: [], total: 0 }
-  }
+  useEffect(() => {
+    if (hasSearch) {
+      setIsSearchActive(true)
+    }
+  }, [searchQuery])
 
-  const isFetching = useIsFetching({
-    queryKey: postQueryKeys.all,
-  })
+  useEffect(() => {
+    setIsSearchActive(false)
+  }, [skip, limit, tag, sortOrder, sortBy])
+
+  useEffect(() => {
+    if (!loading) {
+      setPosts(posts)
+    }
+  }, [loading])
 
   return {
-    getPostsData: getCachedPostsData,
-    isLoading: isFetching > 0,
+    posts: storedPosts,
+    total,
+    loading,
+    searchPosts,
   }
 }
 
